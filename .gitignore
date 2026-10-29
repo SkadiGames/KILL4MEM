@@ -1,0 +1,46 @@
+# Unreal Engine - Временные и скомпилированные файлы
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+Build/
+Docs/
+
+# Папки для конфигураций (игнорируем пользовательские настройки, но не всё!)
+Config/Local/
+Config/User*.ini
+
+# IDE и системные файлы
+.vs/
+.idea/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.user
+*.userosscache
+*.userprefs
+
+# Windows
+Thumbs.db
+ehthumbs.db
+.DS_Store
+
+# Скомпилированные объектные файлы
+*.obj
+*.pch
+*.exp
+*.lib
+*.pdb
+*.dll
+*.exe
+*.o
+*.so
+*.dylib
+
+# Логи и бэкапы
+*.log
+*.tmp
+*.backup
