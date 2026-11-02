@@ -11,6 +11,7 @@ class UInputComponent;
 class USkeletalMeshComponent;
 class UCameraComponent;
 class UInputAction;
+class UWeaponDataAsset;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -21,74 +22,88 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 UCLASS(abstract)
 class AKILL4MEMCharacter : public ACharacter
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	/** Pawn mesh: first person view (arms; seen only by self) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* FirstPersonMesh;
+    /** Pawn mesh: first person view (arms; seen only by self) */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+    USkeletalMeshComponent* FirstPersonMesh;
 
-	/** First person camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FirstPersonCameraComponent;
-
-protected:
-
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	UInputAction* JumpAction;
-
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	UInputAction* MoveAction;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	class UInputAction* LookAction;
-
-	/** Mouse Look Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	class UInputAction* MouseLookAction;
-	
-public:
-	AKILL4MEMCharacter();
+    /** First person camera */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+    UCameraComponent* FirstPersonCameraComponent;
 
 protected:
+    /** Jump Input Action */
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* JumpAction;
 
-	/** Called from Input Actions for movement input */
-	void MoveInput(const FInputActionValue& Value);
+    /** Move Input Action */
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* MoveAction;
 
-	/** Called from Input Actions for looking input */
-	void LookInput(const FInputActionValue& Value);
+    /** Attack Input Action */
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* AttackAction;
 
-	/** Handles aim inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoAim(float Yaw, float Pitch);
+    /** Look Input Action */
+    UPROPERTY(EditAnywhere, Category = "Input")
+    class UInputAction* LookAction;
 
-	/** Handles move inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoMove(float Right, float Forward);
+    /** Mouse Look Input Action */
+    UPROPERTY(EditAnywhere, Category = "Input")
+    class UInputAction* MouseLookAction;
 
-	/** Handles jump start inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpStart();
+    // --- Weapons ---
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    TArray<TObjectPtr<UWeaponDataAsset>> Weapons;
 
-	/** Handles jump end inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpEnd();
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Weapon")
+    int32 CurrentWeaponIndex = 0;
 
-protected:
+    // Компонент для меша оружия в FP-виде (если ещё нет)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+    TObjectPtr<UStaticMeshComponent> FirstPersonWeaponMesh;
 
-	/** Set up input action bindings */
-	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-	
+    UFUNCTION(BlueprintCallable, Category = "Weapon")
+    void SetWeaponByIndex(int32 NewIndex);
+
+    UFUNCTION(BlueprintCallable, Category = "Weapon")
+    UWeaponDataAsset* GetCurrentWeapon() const;
 
 public:
+    AKILL4MEMCharacter();
 
-	/** Returns the first person mesh **/
-	USkeletalMeshComponent* GetFirstPersonMesh() const { return FirstPersonMesh; }
+protected:
+    void MoveInput(const FInputActionValue& Value);
 
-	/** Returns first person camera component **/
-	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+    void LookInput(const FInputActionValue& Value);
 
+    void AttackInput();
+
+    /** Handles aim inputs from either controls or UI interfaces */
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoAim(float Yaw, float Pitch);
+
+    /** Handles move inputs from either controls or UI interfaces */
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoMove(float Right, float Forward);
+
+    /** Handles jump start inputs from either controls or UI interfaces */
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoJumpStart();
+
+    /** Handles jump end inputs from either controls or UI interfaces */
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoJumpEnd();
+
+protected:
+    /** Set up input action bindings */
+    virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+
+public:
+    /** Returns the first person mesh **/
+    USkeletalMeshComponent* GetFirstPersonMesh() const { return FirstPersonMesh; }
+
+    /** Returns first person camera component **/
+    UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 };
-
